@@ -25,10 +25,12 @@ struct Client
 		try {
 			asio::connect(this->socket, endpoint);
 		}
-		catch(std::exception& e){
+		catch(std::exception& ignored){
+			(void)ignored;
+
 			g_HostSelected++;
 			while (g_HostSelected >= g_HostVec.size())
-				g_HostSelected -= g_HostVec.size();
+				g_HostSelected -= (int) g_HostVec.size();
 		}
 	};
 
