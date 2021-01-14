@@ -10,7 +10,7 @@ using namespace cv;
 typedef unsigned char byte;
 
 
-//const std::string g_Host = "192.168.2.6";
+const std::string g_Host = "192.168.2.6";
 //const std::string host = "127.0.0.1";
 const int g_Port = 52946;
 
@@ -33,7 +33,7 @@ void webcamLoop() {
 			frame = getWebcamFrame();
 
 			sendFrame(frame);
-			imshow("Webcam", frame);
+			//imshow("Webcam", frame);
 
 			if (waitKey(1000 / webcamFps) >= 0)
 				break;
