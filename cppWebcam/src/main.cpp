@@ -10,18 +10,13 @@ using namespace cv;
 typedef unsigned char byte;
 
 
-//const std::string g_Host = "192.168.2.6";
-const std::string g_Host = "62.131.213.61";
-//const std::string host = "127.0.0.1";
-const int g_Port = 51304;
-
 void sendFrame(Mat frame) {
 	std::vector<uchar> buf;
 	imencode(".jpg", frame, buf);
 
 	std::string bufStr(buf.begin(), buf.end());
 
-	sendData(g_Host, g_Port, bufStr);
+	sendData(bufStr);
 }
 
 void webcamLoop() {

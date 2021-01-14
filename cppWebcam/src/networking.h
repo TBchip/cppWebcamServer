@@ -11,4 +11,4 @@
 #include <asio.hpp>
 #include "opencv2/opencv.hpp"
 
-void sendData(std::string host, int port, std::string data);
+void sendData(std::string data);
