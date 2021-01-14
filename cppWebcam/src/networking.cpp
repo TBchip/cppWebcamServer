@@ -20,9 +20,8 @@ struct Client
 		: io_service(svc), socket(io_service)
 	{
 		tcp::resolver resolver(io_service);
-		std::cout << 2 << std::endl;
 		tcp::resolver::iterator endpoint = resolver.resolve(tcp::resolver::query(g_HostVec[g_HostSelected], g_Port));
-		std::cout << 3 << std::endl;
+
 		try {
 			asio::connect(this->socket, endpoint);
 		}
@@ -31,20 +30,16 @@ struct Client
 			while (g_HostSelected >= g_HostVec.size())
 				g_HostSelected -= g_HostVec.size();
 		}
-		std::cout << 4 << std::endl;
 	};
 
 	void send(std::string const& message) {
 		socket.send(asio::buffer(message));
-		std::cout << 6 << std::endl;
 	}
 };
 
 void sendData(std::string data) {
 	asio::io_service svc;
-	std::cout << 1 << std::endl;
 	Client client(svc);
-
 
 	std::string dataLen = std::to_string(data.size());
 	std::string header = "--------";
@@ -52,7 +47,8 @@ void sendData(std::string data) {
 		header[i] = dataLen[i];
 	}
 
-	std::cout << 5 << std::endl;
+	std::cout << g_HostVec[g_HostSelected] << std::endl;
+
 	client.send(header);
 	client.send(data);
 }
