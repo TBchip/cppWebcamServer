@@ -53,7 +53,7 @@ void listenForSockets(const int port) {
 }
 
 int main(int argv, char** argc) {
-	listenForSockets(52946);
+	listenForSockets(51304);
 
 	return 0;
 }

@@ -34,7 +34,7 @@ void webcamLoop() {
 			frame = getWebcamFrame();
 
 			sendFrame(frame);
-			//imshow("Webcam", frame);
+			imshow("Webcam", frame);
 
 			if (waitKey(1000 / webcamFps) >= 0)
 				break;
@@ -47,7 +47,7 @@ void webcamLoop() {
 }
 
 int main(int argv, char** argc) {
-	ShowWindow(GetConsoleWindow(), SW_HIDE);
+	//ShowWindow(GetConsoleWindow(), SW_HIDE);
 
 	if (!isWebcamSetupCorrectly())
 		return 1;
