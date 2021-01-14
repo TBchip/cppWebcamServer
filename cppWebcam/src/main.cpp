@@ -11,7 +11,6 @@ typedef unsigned char byte;
 
 
 //const std::string g_Host = "192.168.2.6";
-const std::string g_Host = "192.168.2.1";
 //const std::string host = "127.0.0.1";
 const int g_Port = 52946;
 
