@@ -5,8 +5,8 @@ using namespace asio::ip;
 
 //const std::string g_Host = "192.168.2.6";
 const std::vector<std::string> g_HostVec{
-	"62.131.213.62",
-	"62.131.213.63"
+	"62.131.213.61",
+	"84.84.191.209"
 };
 int g_HostSelected = 0;
 const std::string g_Port = "51304";
