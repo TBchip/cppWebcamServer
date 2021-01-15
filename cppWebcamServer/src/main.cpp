@@ -1,4 +1,5 @@
 #include <iostream>
+#include <regex>
 #include "opencv2/opencv.hpp"
 
 #ifdef _WIN32
@@ -92,8 +93,36 @@ void showLatestFrame() {
     }
 }
 
+int getWebcamIndex() {
+    system("cls");
+
+    int selectedIndex = -1;
+    while (selectedIndex < 0 || selectedIndex >= 4)
+    {
+        for (int i = 0; i < 4; i++) {
+            std::cout << "[" << i << "] ";
+            //std::cout << openAddresses[i];
+            std::cout << std::endl;
+        }
+        std::cout << "select an id: ";
+
+        std::string indexInput;
+        std::cin >> indexInput;
+
+        if (std::regex_match(indexInput, (std::regex)"^-?\\d+"))
+            selectedIndex = std::stoi(indexInput);
+
+        system("cls");
+    }
+
+    return selectedIndex;
+}
+
 int main(int argv, char** argc) {
-    listenForWebcam(openAddresses[0]);
+    //listenForWebcam(openAddresses[0]);
+
+    std::cout << getWebcamIndex() << std::endl;
+    system("pause");
 
 	return 0;
 }
