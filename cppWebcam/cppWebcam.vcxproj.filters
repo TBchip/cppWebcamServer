@@ -18,10 +18,13 @@
     <ClCompile Include="src\webcam.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\main.cpp">
+    <ClCompile Include="src\networking.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\networking.cpp">
+    <ClCompile Include="src\mainProgram.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\windowsService.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -30,6 +33,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\networking.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\mainProgram.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

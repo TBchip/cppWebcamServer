@@ -148,11 +148,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\mainProgram.cpp" />
     <ClCompile Include="src\networking.cpp" />
     <ClCompile Include="src\webcam.cpp" />
+    <ClCompile Include="src\windowsService.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\mainProgram.h" />
     <ClInclude Include="src\networking.h" />
     <ClInclude Include="src\webcam.h" />
   </ItemGroup>
