@@ -17,7 +17,7 @@ void updateLatestFrame(std::vector<uchar> data) {
     latestFrame = imdecode(data, IMREAD_COLOR);
 }
 
-void listenForSockets(const int port) {
+void listenForWebcam(const int port, const asio::ip::address adress) {
     while (1) {
         try {
             /*waiting for connection*/
@@ -26,6 +26,10 @@ void listenForSockets(const int port) {
 
             tcp::socket socket(io_service);
             acceptor.accept(socket);
+
+            asio::ip::address remoteAdress = socket.remote_endpoint().address();
+            if (remoteAdress != adress)
+                continue;
 
             /*getting header*/
             std::vector<char> header(8);
@@ -53,7 +57,7 @@ void listenForSockets(const int port) {
 }
 
 int main(int argv, char** argc) {
-	listenForSockets(51304);
+    listenForWebcam(51304);
 
 	return 0;
 }
