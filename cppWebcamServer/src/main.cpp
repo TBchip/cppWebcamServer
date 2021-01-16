@@ -12,7 +12,7 @@ using namespace cv;
 using namespace asio::ip;
 
 
-const int port = 5130;
+const int port = 51304;
 std::vector<address> openAddresses;
 Mat latestFrame;
 
@@ -57,7 +57,10 @@ void listenForWebcam(const address targetAddress) {
         catch (std::exception& e)
         {
             std::cerr << "Exception: " << e.what() << std::endl;
-        }        
+        }
+
+        imshow("Webcam", latestFrame);
+        waitKey(1000 / 30);
     }
 }
 void listenForConnection() {
@@ -86,6 +89,7 @@ int getWebcamIndex() {
     int selectedIndex = -1;
     while (selectedIndex < 0 || selectedIndex >= openAddresses.size())
     {
+        std::cout << "[u] update list" << std::endl;
         for (int i = 0; i < openAddresses.size(); i++) {
             std::cout << "[" << i << "] ";
             std::cout << openAddresses[i].to_string();
@@ -96,10 +100,13 @@ int getWebcamIndex() {
         std::string indexInput;
         std::cin >> indexInput;
 
+        system("cls");
+
+        if (indexInput == "u")
+            continue;
+
         if (std::regex_match(indexInput, (std::regex)"^-?\\d+"))
             selectedIndex = std::stoi(indexInput);
-
-        system("cls");
     }
 
     return selectedIndex;
@@ -130,14 +137,14 @@ int main(int argv, char** argc) {
     stop_listenForConnection = true;
 
     //start showing latest frame
-    std::thread showFrame(showLatestFrame);
-    showFrame.detach();
+    //std::thread showFrame(showLatestFrame);
+    //showFrame.detach();
 
     //start listening for webcam frames from client
     listenForWebcam(openAddresses[selectedWebcam]);
 
     //stop showw latest fram thread
-    stop_showLatestFrame = true;
+    //stop_showLatestFrame = true;
 
 	return 0;
 }
