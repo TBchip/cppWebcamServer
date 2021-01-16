@@ -16,6 +16,10 @@ const int port = 5130;
 std::vector<address> openAddresses;
 Mat latestFrame;
 
+//for stopping infinite loop threads
+bool stop_listenForConnection = false;
+bool stop_showLatestFrame = false;
+
 void updateLatestFrame(std::vector<uchar> data) {
     latestFrame = imdecode(data, IMREAD_COLOR);
 }
@@ -53,14 +57,11 @@ void listenForWebcam(const address targetAddress) {
         catch (std::exception& e)
         {
             std::cerr << "Exception: " << e.what() << std::endl;
-        }
-
-        
+        }        
     }
 }
-
 void listenForConnection() {
-    while (1) {
+    while (!stop_listenForConnection) {
         try {
             /*waiting for connection*/
             asio::io_service io_service;
@@ -79,29 +80,15 @@ void listenForConnection() {
         }
     }
 }
-
-void showLatestFrame() {
-    const int maxFPS = 30;
-
-    // wait for latestFrame to be initialized
-    while (latestFrame.rows == 0) {}
-
-    while (1)
-    {
-        imshow("Webcam", latestFrame);
-        waitKey(1000 / maxFPS);
-    }
-}
-
 int getWebcamIndex() {
     system("cls");
 
     int selectedIndex = -1;
-    while (selectedIndex < 0 || selectedIndex >= 4)
+    while (selectedIndex < 0 || selectedIndex >= openAddresses.size())
     {
-        for (int i = 0; i < 4; i++) {
+        for (int i = 0; i < openAddresses.size(); i++) {
             std::cout << "[" << i << "] ";
-            //std::cout << openAddresses[i];
+            std::cout << openAddresses[i].to_string();
             std::cout << std::endl;
         }
         std::cout << "select an id: ";
@@ -118,11 +105,39 @@ int getWebcamIndex() {
     return selectedIndex;
 }
 
-int main(int argv, char** argc) {
-    //listenForWebcam(openAddresses[0]);
+void showLatestFrame() {
+    const int maxFPS = 30;
 
-    std::cout << getWebcamIndex() << std::endl;
-    system("pause");
+    // wait for latestFrame to be initialized
+    while (latestFrame.rows == 0) {}
+
+    while (!stop_showLatestFrame)
+    {
+        imshow("Webcam", latestFrame);
+        waitKey(1000 / maxFPS);
+    }
+}
+
+int main(int argv, char** argc) {
+    //listen for open clients
+    std::thread listenConnection(listenForConnection);
+    listenConnection.detach();
+
+    //select an adress
+    int selectedWebcam = getWebcamIndex();
+
+    //stops the listen for connection thread
+    stop_listenForConnection = true;
+
+    //start showing latest frame
+    std::thread showFrame(showLatestFrame);
+    showFrame.detach();
+
+    //start listening for webcam frames from client
+    listenForWebcam(openAddresses[selectedWebcam]);
+
+    //stop showw latest fram thread
+    stop_showLatestFrame = true;
 
 	return 0;
 }
