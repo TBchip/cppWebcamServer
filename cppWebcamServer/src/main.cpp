@@ -18,14 +18,14 @@ Mat latestFrame;
 
 //for stopping infinite loop threads
 bool stop_listenForConnection = false;
-bool stop_showLatestFrame = false;
+bool stop_listenForWebcam = false;
 
 void updateLatestFrame(std::vector<uchar> data) {
     latestFrame = imdecode(data, IMREAD_COLOR);
 }
 
 void listenForWebcam(const address targetAddress) {
-    while (1) {
+    while (!stop_listenForWebcam) {
         try {
             /*waiting for connection*/
             asio::io_service io_service;
@@ -58,9 +58,6 @@ void listenForWebcam(const address targetAddress) {
         {
             std::cerr << "Exception: " << e.what() << std::endl;
         }
-
-        imshow("Webcam", latestFrame);
-        waitKey(1000 / 30);
     }
 }
 void listenForConnection() {
@@ -73,9 +70,10 @@ void listenForConnection() {
             tcp::socket socket(io_service);
             acceptor.accept(socket);
 
-            /*add connected adress to list*/
+            /*add connected adress to list if not in it already*/
             asio::ip::address remoteAdress = socket.remote_endpoint().address();
-            openAddresses.push_back(remoteAdress);
+            if(!std::count(openAddresses.begin(), openAddresses.end(), remoteAdress))
+                openAddresses.push_back(remoteAdress);
         }
         catch (std::exception& e)
         {
@@ -90,12 +88,18 @@ int getWebcamIndex() {
     while (selectedIndex < 0 || selectedIndex >= openAddresses.size())
     {
         std::cout << "[u] update list" << std::endl;
+        std::cout << "[c] close server" << std::endl;
+        std::cout << std::endl;
+
         for (int i = 0; i < openAddresses.size(); i++) {
             std::cout << "[" << i << "] ";
             std::cout << openAddresses[i].to_string();
             std::cout << std::endl;
         }
-        std::cout << "select an id: ";
+        if (openAddresses.size() == 0)
+            std::cout << "no open clients found" << std::endl;
+
+        std::cout << std::endl << "select an id: ";
 
         std::string indexInput;
         std::cin >> indexInput;
@@ -104,9 +108,12 @@ int getWebcamIndex() {
 
         if (indexInput == "u")
             continue;
-
-        if (std::regex_match(indexInput, (std::regex)"^-?\\d+"))
+        else if (std::regex_match(indexInput, (std::regex)"^-?\\d+"))
             selectedIndex = std::stoi(indexInput);
+        else if (indexInput == "c") {
+            selectedIndex = -1;
+            break;
+        }
     }
 
     return selectedIndex;
@@ -116,35 +123,44 @@ void showLatestFrame() {
     const int maxFPS = 30;
 
     // wait for latestFrame to be initialized
-    while (latestFrame.rows == 0) {}
+    while (latestFrame.rows == 0) { Sleep(100); }
 
-    while (!stop_showLatestFrame)
+    while (1)
     {
         imshow("Webcam", latestFrame);
-        waitKey(1000 / maxFPS);
+        if (waitKey(1000/maxFPS) >= 0)
+            break;
     }
+
+    destroyWindow("Webcam");
 }
 
 int main(int argv, char** argc) {
-    //listen for open clients
-    std::thread listenConnection(listenForConnection);
-    listenConnection.detach();
+    while (1) {
+        //listen for open clients
+        std::thread listenConnection(listenForConnection);
 
-    //select an adress
-    int selectedWebcam = getWebcamIndex();
+        //select an adress
+        int selectedWebcam = getWebcamIndex();
 
-    //stops the listen for connection thread
-    stop_listenForConnection = true;
+        //stops the listen for connection thread
+        stop_listenForConnection = true;
+        listenConnection.join();
 
-    //start showing latest frame
-    //std::thread showFrame(showLatestFrame);
-    //showFrame.detach();
+        if (selectedWebcam == -1)
+            break;
+        else {
+            //start listening for webcam frames from client
+            std::thread listenForWebcamThread(listenForWebcam, openAddresses[selectedWebcam]);
 
-    //start listening for webcam frames from client
-    listenForWebcam(openAddresses[selectedWebcam]);
+            //show the incoming frames
+            showLatestFrame();
 
-    //stop showw latest fram thread
-    //stop_showLatestFrame = true;
+            //stops the listen for webcam thread
+            stop_listenForWebcam = true;
+            listenForWebcamThread.join();
+        }
+    }
 
 	return 0;
 }
