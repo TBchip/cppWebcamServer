@@ -159,6 +159,10 @@ int main(int argv, char** argc) {
             //stops the listen for webcam thread
             stop_listenForWebcam = true;
             listenForWebcamThread.join();
+
+            //set all stop vars to false
+            stop_listenForConnection = false;
+            stop_listenForWebcam = false;
         }
     }
 
